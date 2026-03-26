@@ -1,0 +1,34 @@
+# Dependencias
+node_modules/
+
+# Ambientes y secretos
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Compilados de TypeScript y binarios
+dist/
+build/
+out/
+*.js
+*.js.map
+!package.json
+!tsconfig.json
+!jest.config.js
+
+# Carpetas de sincronización locales generadas durante pruebas
+sync/
+sync-*/
+
+# Sistema Operativo
+.DS_Store
+Thumbs.db
