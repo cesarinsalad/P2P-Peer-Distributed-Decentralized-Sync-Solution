@@ -7,9 +7,21 @@ import { NetworkManager } from './network';
 import { TransferManager } from './transfer';
 import { calculateChecksum } from './checksum';
 import os from 'os';
+import { Command } from 'commander';
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : Math.floor(Math.random() * 10000) + 10000;
-const SYNC_DIR = path.join(process.cwd(), `sync-${PORT}`);
+const program = new Command();
+program
+  .name('p2p-sync')
+  .description('Decentralized P2P file synchronization tool')
+  .version('1.0.0')
+  .option('-p, --port <number>', 'Port to initialize the node', String(Math.floor(Math.random() * 10000) + 10000))
+  .option('-d, --dir <path>', 'Directory to synchronize (default: current directory)', process.cwd());
+
+program.parse(process.argv);
+const options = program.opts();
+
+const PORT = parseInt(options.port, 10);
+const SYNC_DIR = path.resolve(options.dir);
 
 function getLocalIp(): string {
   const interfaces = os.networkInterfaces();
@@ -26,17 +38,15 @@ function getLocalIp(): string {
 async function main() {
   if (!fs.existsSync(SYNC_DIR)) {
     fs.mkdirSync(SYNC_DIR, { recursive: true });
-    // Write a dummy file to start syncing immediately
-    fs.writeFileSync(path.join(SYNC_DIR, `hello-${PORT}.txt`), `Hello from node initialized on port ${PORT}!`);
   }
 
   // Set up ignore filter
   const ig = ignore();
   const ignoreFilePath = path.join(process.cwd(), '.ignore');
   if (fs.existsSync(ignoreFilePath)) {
-     const ignoreContent = fs.readFileSync(ignoreFilePath, 'utf-8');
-     ig.add(ignoreContent);
-     console.log('[System] Loaded .ignore file rules.');
+    const ignoreContent = fs.readFileSync(ignoreFilePath, 'utf-8');
+    ig.add(ignoreContent);
+    console.log('[System] Loaded .ignore file rules.');
   }
 
   const localIp = getLocalIp();
@@ -61,50 +71,50 @@ async function main() {
   });
 
   const broadcastFile = async (filepath: string) => {
-     const relativePath = path.relative(SYNC_DIR, filepath);
-     if (ig.ignores(relativePath) || relativePath.endsWith('.tmp') || relativePath.includes('.conflict-')) {
-        return; // Ignored explicitly or implicitly (tmp/conflict files)
-     }
-     
-     const filename = path.basename(filepath);
-     if (transfer.isReceiving(filename)) return;
+    const relativePath = path.relative(SYNC_DIR, filepath);
+    if (ig.ignores(relativePath) || relativePath.endsWith('.tmp') || relativePath.includes('.conflict-')) {
+      return; // Ignored explicitly or implicitly (tmp/conflict files)
+    }
 
-     if (fs.existsSync(filepath)) {
-        try {
-           const stat = fs.statSync(filepath);
-           if (!stat.isFile()) return;
+    const filename = path.basename(filepath);
+    if (transfer.isReceiving(filename)) return;
 
-           const checksum = await calculateChecksum(filepath);
-           const peers = network.getConnectedPeers();
-           for (const peerId of peers) {
-              await transfer.initiateSync(peerId, filepath, checksum);
-           }
-        } catch (err) {
-           console.error(`[System] Error broadcasting file ${filename}:`, err);
+    if (fs.existsSync(filepath)) {
+      try {
+        const stat = fs.statSync(filepath);
+        if (!stat.isFile()) return;
+
+        const checksum = await calculateChecksum(filepath);
+        const peers = network.getConnectedPeers();
+        for (const peerId of peers) {
+          await transfer.initiateSync(peerId, filepath, checksum);
         }
-     }
+      } catch (err) {
+        console.error(`[System] Error broadcasting file ${filename}:`, err);
+      }
+    }
   };
 
   // Watcher setup
   const watcher = chokidar.watch(SYNC_DIR, {
-      ignored: (p: string) => {
-          const stats = fs.existsSync(p) ? fs.statSync(p) : null;
-          const rel = path.relative(SYNC_DIR, p);
-          if (rel && ig.ignores(rel)) return true;
-          if (path.basename(p).endsWith('.tmp')) return true;
-          if (path.basename(p).includes('.conflict-')) return true;
-          return false;
-      },
-      persistent: true,
-      ignoreInitial: true
+    ignored: (p: string) => {
+      const stats = fs.existsSync(p) ? fs.statSync(p) : null;
+      const rel = path.relative(SYNC_DIR, p);
+      if (rel && ig.ignores(rel)) return true;
+      if (path.basename(p).endsWith('.tmp')) return true;
+      if (path.basename(p).includes('.conflict-')) return true;
+      return false;
+    },
+    persistent: true,
+    ignoreInitial: true
   });
 
   watcher.on('add', (filePath) => {
-      broadcastFile(filePath);
+    broadcastFile(filePath);
   });
-  
+
   watcher.on('change', (filePath) => {
-      broadcastFile(filePath);
+    broadcastFile(filePath);
   });
 
   // Keep a periodic reconciliation for newly connected peers or missed events
@@ -114,8 +124,8 @@ async function main() {
 
     const files = fs.readdirSync(SYNC_DIR);
     for (const file of files) {
-       const filePath = path.join(SYNC_DIR, file);
-       broadcastFile(filePath);
+      const filePath = path.join(SYNC_DIR, file);
+      broadcastFile(filePath);
     }
   }, 10000); // 10 seconds
 

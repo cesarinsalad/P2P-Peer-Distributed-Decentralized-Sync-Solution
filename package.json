@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "chokidar": "^5.0.0",
+    "commander": "^14.0.3",
     "ignore": "^7.0.5",
     "multicast-dns": "^7.2.5"
   },
