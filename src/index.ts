@@ -11,7 +11,7 @@ import { Command } from 'commander';
 
 const program = new Command();
 program
-  .name('p2p-sync')
+  .name('peersync')
   .description('Decentralized P2P file synchronization tool')
   .version('1.0.0')
   .option('-p, --port <number>', 'Port to initialize the node', String(Math.floor(Math.random() * 10000) + 10000))

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔄 P2P-Sync Hub
+# 🔄 PeerSync
 
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) 
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) 
@@ -80,7 +80,7 @@ npm start -- --help
 ```
 
 ```text
-Usage: p2p-sync [options]
+Usage: peersync [options]
 
 Decentralized P2P file synchronization tool
 

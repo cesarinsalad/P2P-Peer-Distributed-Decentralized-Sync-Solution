@@ -1,5 +1,5 @@
 {
-  "name": "p2p-sync",
+  "name": "peersync",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
