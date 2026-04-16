@@ -42,7 +42,7 @@ async function main() {
 
   // Set up ignore filter
   const ig = ignore();
-  const ignoreFilePath = path.join(process.cwd(), '.ignore');
+  const ignoreFilePath = path.join(SYNC_DIR, '.ignore');
   if (fs.existsSync(ignoreFilePath)) {
     const ignoreContent = fs.readFileSync(ignoreFilePath, 'utf-8');
     ig.add(ignoreContent);

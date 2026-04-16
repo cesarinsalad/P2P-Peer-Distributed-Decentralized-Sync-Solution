@@ -1,0 +1,23 @@
+# Directorios de sistema de control de versiones
+.git/
+.svn/
+
+# Dependencias y entornos
+node_modules/
+dist/
+build/
+venv/
+.venv/
+
+# Archivos de sistema y cachés
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Configuraciones sensibles locales
+.env
+.env.local
+
+# Propios archivos de conflicto de la herramienta P2P
+*.conflict-*
