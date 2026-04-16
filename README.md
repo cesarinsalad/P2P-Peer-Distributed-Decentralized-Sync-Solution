@@ -4,7 +4,7 @@
 
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) 
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) 
-![License](https://img.shields.io/badge/license-ISC-blue?style=for-the-badge)
+![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge)
 
 A powerful terminal tool for smart file and directory synchronization between computers on the same local network, operating 100% via true **Peer-To-Peer** routing without relying on third-party clouds or central servers.
 

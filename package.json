@@ -8,7 +8,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "description": "",
   "dependencies": {
     "chokidar": "^5.0.0",
