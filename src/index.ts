@@ -15,7 +15,8 @@ program
   .description('Decentralized P2P file synchronization tool')
   .version('1.0.0')
   .option('-p, --port <number>', 'Port to initialize the node', String(Math.floor(Math.random() * 10000) + 10000))
-  .option('-d, --dir <path>', 'Directory to synchronize (default: current directory)', process.cwd());
+  .option('-d, --dir <path>', 'Directory to synchronize (default: current directory)', process.cwd())
+  .option('-P, --peer <host:port>', 'Manually connect to a known peer (e.g. 192.168.1.20:12345)');
 
 program.parse(process.argv);
 const options = program.opts();
@@ -69,6 +70,15 @@ async function main() {
   startDiscovery(PORT, (peerIp, peerPort) => {
     network.connectToPeer(peerIp, peerPort);
   });
+
+  if (options.peer) {
+    const [ip, peerPortStr] = options.peer.split(':');
+    const peerPort = parseInt(peerPortStr, 10);
+    if (ip && peerPort) {
+      console.log(`[System] Intentionally forcing manual connection to ${ip}:${peerPort}...`);
+      network.connectToPeer(ip, peerPort);
+    }
+  }
 
   const broadcastFile = async (filepath: string) => {
     const relativePath = path.relative(SYNC_DIR, filepath);
